@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { axiosWithAuth } from '../utils/axiosWithAuth';
 
 const initialColor = {
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors }) => {
+const ColorList = ({ colors, updateColors, props }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
@@ -16,15 +16,32 @@ const ColorList = ({ colors, updateColors }) => {
     setColorToEdit(color);
   };
 
+  console.log(colorToEdit);
+
   const saveEdit = e => {
     e.preventDefault();
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    axiosWithAuth()
+    .put(`/colors/${colorToEdit.id}`, colorToEdit) // .put is for updating data, .post is for new data.
+    .then(res => {
+      console.log(res.data);
+      updateColors([...colors, res.data]);// <-- biggest gotcha!
+    })
+    .catch(err => console.log(err.response));
   };
 
   const deleteColor = color => {
     // make a delete request to delete this color
+    // e.preventDefault();
+    // axiosWithAuth()
+    //     .delete(`/colors/${movie.id}`)
+    //     .then(res => {
+    //         console.log(res);
+    //         props.history.push(`/`);
+    //     })
+    //     .catch(err => console.log(err.response))
   };
 
   return (
